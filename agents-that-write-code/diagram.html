@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Coding Agent Architecture Flowchart</title>
+  <style>
+    /* Retro Computing Theme Styling */
+    body {
+      display: flex;              /* Added for vertical centering */
+      justify-content: center;      /* Added for horizontal centering */
+      align-items: center;          /* Added for vertical centering */
+      height: 100vh;                /* Full viewport height */
+      background-color: #000;
+      color: #0f0;
+      margin: 0;
+      font-family: 'Courier New', Courier, monospace;
+    }
+    
+    svg {
+      image-rendering: pixelated;
+    }
+    
+    /* Override all module colors for a monochrome retro look */
+    svg rect {
+      fill: #000 !important;
+      stroke: #0f0 !important;
+      stroke-width: 2;
+    }
+    
+    svg text {
+      fill: #0f0 !important;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 14px;
+      text-anchor: middle;
+      dominant-baseline: middle;
+    }
+    
+    svg line,
+    svg polyline {
+      stroke: #0f0 !important;
+      stroke-width: 2;
+    }
+    
+    marker path {
+      fill: #0f0 !important;
+    }
+    
+    /* Hidden class remains unchanged */
+    .hidden {
+      opacity: 0;
+      transition: opacity 0.5s ease;
+    }
+    
+    /* Active state styling now glows in retro yellow */
+    svg rect.active {
+      stroke: #ff0 !important;
+      stroke-width: 2 !important;
+    }
+    svg line.active,
+    svg polyline.active {
+      stroke: #ff0 !important;
+      stroke-width: 2 !important;
+    }
+  </style>
+</head>
+<body>
+  <svg viewBox="0 0 1000 300">
+    <defs>
+      <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+        <path d="M0,0 L0,6 L9,3 z" fill="#000" />
+      </marker>
+    </defs>
+
+    <!-- Main Modules -->
+    <!-- Write Code (always visible) -->
+    <rect id="module-write" x="50" y="50" width="150" height="50" fill="#e0f7fa" stroke="#00796b" stroke-width="2"/>
+    <text x="125" y="75">Write Code</text>
+    
+    <!-- Review Code (initially hidden) -->
+    <rect id="module-review" class="hidden" x="300" y="50" width="150" height="50" fill="#e8f5e9" stroke="#388e3c" stroke-width="2"/>
+    <text id="label-review" class="hidden" x="375" y="75">Review Code</text>
+    
+    <!-- Run Code (initially hidden) -->
+    <rect id="module-run" class="hidden" x="550" y="50" width="150" height="50" fill="#fff3e0" stroke="#f57c00" stroke-width="2"/>
+    <text id="label-run" class="hidden" x="625" y="75">Run Code</text>
+    
+    <!-- Output (initially hidden) -->
+    <rect id="module-output" class="hidden" x="800" y="50" width="150" height="50" fill="#f3e5f5" stroke="#8e24aa" stroke-width="2"/>
+    <text id="label-output" class="hidden" x="875" y="75">Output</text>
+    
+    <!-- Revise Code (initially hidden) -->
+    <rect id="module-revise" class="hidden" x="300" y="200" width="150" height="50" fill="#ffebee" stroke="#d32f2f" stroke-width="2"/>
+    <text id="label-revise" class="hidden" x="375" y="225">Revise Code</text>
+
+    <!-- Arrows for primary flow -->
+    <!-- Write Code to Review Code -->
+    <line id="arrow-write-review" class="hidden" x1="200" y1="75" x2="300" y2="75" stroke="#000" stroke-width="2" marker-end="url(#arrow)" />
+    <!-- Review Code to Run Code -->
+    <line id="arrow-review-run" class="hidden" x1="450" y1="75" x2="550" y2="75" stroke="#000" stroke-width="2" marker-end="url(#arrow)" />
+    <!-- Run Code to Output -->
+    <line id="arrow-run-output" class="hidden" x1="700" y1="75" x2="800" y2="75" stroke="#000" stroke-width="2" marker-end="url(#arrow)" />
+
+    <!-- Additional flows -->
+    <!-- Review Code to Revise Code (feedback) -->
+    <line id="arrow-feedback" class="hidden" x1="375" y1="100" x2="375" y2="200" stroke="#000" stroke-width="2" marker-end="url(#arrow)" />
+    <text id="text-feedback" class="hidden" x="410" y="150" text-anchor="start" fill="#000" font-size="12">Feedback</text>
+    <!-- Run Code to Revise Code (error messages) -->
+    <polyline id="arrow-error" class="hidden" points="625,100 625,225 450,225" fill="none" stroke="#000" stroke-width="2" marker-end="url(#arrow)" />
+    <text id="text-error" class="hidden" x="660" y="163" text-anchor="start" fill="#000" font-size="12">Error</text>
+    <!-- Revise Code back to Review Code (continue flow) -->
+    <!-- First cycle: Revise to Review -->
+    <polyline id="arrow-return1" class="hidden" points="300,225 250,225 250,75" fill="none" stroke="#000" stroke-width="2" marker-end="url(#arrow)" />
+    <!-- Second cycle: Revise to Review -->
+    <polyline id="arrow-return2" class="hidden" points="300,225 250,225 250,75" fill="none" stroke="#000" stroke-width="2" marker-end="url(#arrow)" />
+    <!-- Additional arrow: second run from Review Code to Run Code -->
+    <line id="arrow-review-run2" class="hidden" x1="450" y1="75" x2="550" y2="75" stroke="#000" stroke-width="2" marker-end="url(#arrow)" />
+  </svg>
+
+  <!-- Added detailed animation script -->
+  <script>
+    function delay(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    }
+    
+    async function animateWorkflow() {
+      // Step 1: Starting with only Write Code visible (already visible)
+      await delay(500);
+      
+      // Step 2: Animate arrow from Write Code to Review Code and reveal Review Code
+      const arrowWriteReview = document.getElementById("arrow-write-review");
+      arrowWriteReview.classList.remove("hidden");
+      arrowWriteReview.classList.add("active");
+      await delay(500);
+      arrowWriteReview.classList.remove("active");
+      const reviewModule = document.getElementById("module-review");
+      reviewModule.classList.remove("hidden");
+      const labelReview = document.getElementById("label-review");
+      labelReview.classList.remove("hidden");
+      await delay(500);
+      
+      // Step 3: Animate feedback arrow from Review Code to Revise Code and reveal Feedback text
+      const arrowFeedback = document.getElementById("arrow-feedback");
+      arrowFeedback.classList.remove("hidden");
+      arrowFeedback.classList.add("active");
+      const textFeedback = document.getElementById("text-feedback");
+      textFeedback.classList.remove("hidden");
+      await delay(500);
+      arrowFeedback.classList.remove("active");
+      await delay(200);
+      const reviseModule = document.getElementById("module-revise");
+      reviseModule.classList.remove("hidden");
+      const labelRevise = document.getElementById("label-revise");
+      labelRevise.classList.remove("hidden");
+      await delay(500);
+      
+      // Step 4: Animate arrow returning from Revise Code to Review Code (first cycle)
+      const arrowReturn1 = document.getElementById("arrow-return1");
+      arrowReturn1.classList.remove("hidden");
+      arrowReturn1.classList.add("active");
+      await delay(500);
+      arrowReturn1.classList.remove("active");
+      await delay(500);
+      
+      // Step 5: Animate arrow from Review Code to Run Code and reveal Run Code
+      const arrowReviewRun = document.getElementById("arrow-review-run");
+      arrowReviewRun.classList.remove("hidden");
+      arrowReviewRun.classList.add("active");
+      await delay(500);
+      arrowReviewRun.classList.remove("active");
+      const runModule = document.getElementById("module-run");
+      runModule.classList.remove("hidden");
+      const labelRun = document.getElementById("label-run");
+      labelRun.classList.remove("hidden");
+      await delay(500);
+      
+      // Step 6: Animate error arrow from Run Code to Revise Code and reveal Error text
+      const arrowError = document.getElementById("arrow-error");
+      arrowError.classList.remove("hidden");
+      arrowError.classList.add("active");
+      const textError = document.getElementById("text-error");
+      textError.classList.remove("hidden");
+      await delay(500);
+      arrowError.classList.remove("active");
+      await delay(500);
+      
+      // Step 7: Animate arrow returning from Revise Code to Review Code (second cycle)
+      const arrowReturn2 = document.getElementById("arrow-return2");
+      arrowReturn2.classList.remove("hidden");
+      arrowReturn2.classList.add("active");
+      await delay(500);
+      arrowReturn2.classList.remove("active");
+      await delay(500);
+      
+      // Step 8: Animate second arrow from Review Code to Run Code
+      const arrowReviewRun2 = document.getElementById("arrow-review-run2");
+      arrowReviewRun2.classList.remove("hidden");
+      arrowReviewRun2.classList.add("active");
+      await delay(500);
+      arrowReviewRun2.classList.remove("active");
+      await delay(500);
+      
+      // Step 9: Animate arrow from Run Code to Output and reveal Output
+      const arrowRunOutput = document.getElementById("arrow-run-output");
+      arrowRunOutput.classList.remove("hidden");
+      arrowRunOutput.classList.add("active");
+      await delay(500);
+      arrowRunOutput.classList.remove("active");
+      const outputModule = document.getElementById("module-output");
+      outputModule.classList.remove("hidden");
+      const labelOutput = document.getElementById("label-output");
+      labelOutput.classList.remove("hidden");
+    }
+    
+    window.addEventListener("load", animateWorkflow);
+  </script>
+</body>
+</html> 

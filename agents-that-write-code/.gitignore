@@ -1,0 +1,5 @@
+videos/
+.venv/
+thumbnails/
+__pycache__/
+.DS_Store

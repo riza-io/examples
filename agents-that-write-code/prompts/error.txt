@@ -1,0 +1,7 @@
+Existing code:
+{existing_code}
+
+New requirements:
+{instructions}
+
+Please modify the code while maintaining its original functionality. 
