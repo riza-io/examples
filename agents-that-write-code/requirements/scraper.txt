@@ -1,0 +1,3 @@
+Scrape the data found in the HTML table here: 
+https://www2.brea.ca.gov/breasearch/faces/party/search.xhtml
+turn it into JSON
