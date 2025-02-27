@@ -1,33 +1,62 @@
 import anthropic
 import rizaio
 
+# Get an API key from Anthropic and set it as the value of an environment variable named ANTHROPIC_API_KEY
+client = anthropic.Anthropic()
+
+# Get an API key from https://dashboard.riza.io and set it as the value of an environment variable named RIZA_API_KEY
+riza = rizaio.Riza()
+
+
+def execute_function(language, code, function_input):
+    print(f"Running the following {language} code on Riza:\n")
+    print(code)
+    print("\n\n... with the following input:\n")
+    print(function_input)
+
+    resp = riza.command.exec_func(
+        language=language,
+        code=code,
+        input=function_input
+    )
+
+    print("\nResponse from Riza:\n")
+    print(resp)
+
+    if int(resp.execution.exit_code) > 0:
+        raise ValueError(f"non-zero exit code {resp.execution.exit_code}")
+    return resp
+
 
 def main():
-    client = anthropic.Anthropic()
-    riza = rizaio.Riza()
-        
-    messages = [
-        {"role": "user", "content": "Please base32 encode this message: purple monkey dishwasher"},
-    ]
-    tools = [
-        {
-            "name": "execute_python",
-            "description": "Execute a Python script. The Python runtime does not have filesystem access, but does include the entire standard library. Make HTTP requests with the httpx or requests libraries. Read input from stdin and write output to stdout.",
-            "input_schema": {
-                "type": "object",
-                "properties": {
-                    "code": {
-                        "type": "string",
-                        "description": "The Python code to execute",
-                    }
+    CLAUDE_MODEL = "claude-3-7-sonnet-latest"
+    EXECUTE_PYTHON_FUNCTION_TOOL = {
+        "name": "execute_python_function",
+        "description":
+            "Execute a Python function that takes in one parameter, `input`. `input` is a Python object that can have any fields. The Python runtime includes the entire standard library. Write output by returning a Python object with any relevant fields.",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string",
+                    "description": "The Python function to execute. The function signature must be: `def execute(input)`.",
                 },
-                "required": ["code"],
+                "input": {
+                    "type": "object",
+                }
             },
+            "required": ["code", "input"],
         }
-    ]
+    }
 
-    response = client.beta.tools.messages.create(
-        model="claude-3-haiku-20240307",
+    messages = [{
+        "role": "user",
+        "content": "Please base32 encode this message: purple monkey dishwasher"
+    }]
+    tools = [EXECUTE_PYTHON_FUNCTION_TOOL]
+
+    response = client.messages.create(
+        model=CLAUDE_MODEL,
         max_tokens=1024,
         tools=tools,
         messages=messages,
@@ -35,23 +64,9 @@ def main():
 
     tool_used = False
     for block in response.content:
-        if block.type == 'tool_use':
-            language = "UNKNOWN"
-            if block.name == 'execute_python':
-                language = "PYTHON"
-            if block.name == 'execute_javascript':
-                language = "JAVASCRIPT"
-
-            print(f"Running {language}...")
-            print(block.input['code'])
-
-            output = riza.command.exec(language=language, code=block.input['code'])
-            print(output)
-
-            if int(output.exit_code) > 0:
-                raise ValueError(f"non-zero exit code {output.exit_code}")
-
+        if block.type == 'tool_use' and block.name == 'execute_python_function':
             tool_used = True
+            riza_response = execute_function("python", block.input['code'], block.input['input'])
 
             messages.append({
                 "role": "assistant",
@@ -63,24 +78,26 @@ def main():
                     {
                         "type": "tool_result",
                         "tool_use_id": block.id,
-                        "content": output.stdout,
+                        "content": str(riza_response.output),
                     }
                 ],
             })
 
     if not tool_used:
-        print("NO TOOL USE")
+        print("\nNO TOOL USED. Response from Claude:\n")
         print(response)
         return
 
-    response = client.beta.tools.messages.create(
-        model="claude-3-haiku-20240307",
+    response = client.messages.create(
+        model=CLAUDE_MODEL,
         max_tokens=1024,
         tools=tools,
         messages=messages,
     )
 
+    print("\nResponse from Claude:\n")
     print(response)
+
 
 if __name__ == "__main__":
     main()
