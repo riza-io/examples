@@ -29,7 +29,7 @@ def execute_function(language, code, function_input):
 
 
 def main():
-    CLAUDE_MODEL = "claude-3-7-sonnet-20250219"
+    CLAUDE_MODEL = "claude-3-7-sonnet-latest"
     EXECUTE_PYTHON_FUNCTION_TOOL = {
         "name": "execute_python_function",
         "description":
