@@ -75,13 +75,17 @@ def main():
 
                 riza_response = execute_function("python", block.input['code'], block.input['input'])
 
+                message_content = (
+                    str(riza_response.output) if riza_response.execution.exit_code == 0
+                    else f"Function execution resulted in an error: {riza_response.execution.stderr}"
+                )
                 messages.append({
                     "role": "user",
                     "content": [
                         {
                             "type": "tool_result",
                             "tool_use_id": block.id,
-                            "content": str(riza_response.output) if riza_response.execution.exit_code == 0 else f"Function execution resulted in an error: {riza_response.execution.stderr}",
+                            "content": message_content,
                         }
                     ],
                 })
@@ -89,7 +93,7 @@ def main():
         if not tool_used:
             print("\nNo tool used. Final response from Claude:\n")
             print(response)
-            return
+            break
 
         response = client.messages.create(
             model=CLAUDE_MODEL,
