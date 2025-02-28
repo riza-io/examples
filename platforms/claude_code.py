@@ -24,7 +24,7 @@ def execute_function(language, code, function_input):
     print(resp)
 
     if int(resp.execution.exit_code) > 0:
-        raise ValueError(f"non-zero exit code {resp.execution.exit_code}")
+        print(f"Riza execution resulted in a non-zero exit code: {resp.execution.exit_code}")
     return resp
 
 
@@ -62,41 +62,45 @@ def main():
         messages=messages,
     )
 
-    tool_used = False
-    for block in response.content:
-        if block.type == 'tool_use' and block.name == 'execute_python_function':
-            tool_used = True
-            riza_response = execute_function("python", block.input['code'], block.input['input'])
+    while True:
+        tool_used = False
+        messages.append({
+            "role": "assistant",
+            "content": response.content,
+        })
 
-            messages.append({
-                "role": "assistant",
-                "content": response.content,
-            })
-            messages.append({
-                "role": "user",
-                "content": [
-                    {
-                        "type": "tool_result",
-                        "tool_use_id": block.id,
-                        "content": str(riza_response.output),
-                    }
-                ],
-            })
+        for block in response.content:
+            if block.type == 'tool_use' and block.name == 'execute_python_function':
+                tool_used = True
 
-    if not tool_used:
-        print("\nNO TOOL USED. Response from Claude:\n")
-        print(response)
-        return
+                riza_response = execute_function("python", block.input['code'], block.input['input'])
 
-    response = client.messages.create(
-        model=CLAUDE_MODEL,
-        max_tokens=1024,
-        tools=tools,
-        messages=messages,
-    )
+                message_content = (
+                    str(riza_response.output) if riza_response.execution.exit_code == 0
+                    else f"Function execution resulted in an error: {riza_response.execution.stderr}"
+                )
+                messages.append({
+                    "role": "user",
+                    "content": [
+                        {
+                            "type": "tool_result",
+                            "tool_use_id": block.id,
+                            "content": message_content,
+                        }
+                    ],
+                })
 
-    print("\nResponse from Claude:\n")
-    print(response)
+        if not tool_used:
+            print("\nNo tool used. Final response from Claude:\n")
+            print(response)
+            break
+
+        response = client.messages.create(
+            model=CLAUDE_MODEL,
+            max_tokens=1024,
+            tools=tools,
+            messages=messages,
+        )
 
 
 if __name__ == "__main__":
