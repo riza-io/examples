@@ -62,10 +62,8 @@ def main():
         messages=messages,
     )
 
-    tool_used = False
-    code_execution_succeeded = False
-    turns = 1
-    while code_execution_succeeded is False and turns <= 3:
+    while True:
+        tool_used = False
         messages.append({
             "role": "assistant",
             "content": response.content,
@@ -76,8 +74,6 @@ def main():
                 tool_used = True
 
                 riza_response = execute_function("python", block.input['code'], block.input['input'])
-                if riza_response.execution.exit_code == 0:
-                    code_execution_succeeded = True
 
                 messages.append({
                     "role": "user",
@@ -91,20 +87,16 @@ def main():
                 })
 
         if not tool_used:
-            print("\nNO TOOL USED. Response from Claude:\n")
+            print("\nNo tool used. Final response from Claude:\n")
             print(response)
             return
 
-        turns += 1
         response = client.messages.create(
             model=CLAUDE_MODEL,
             max_tokens=1024,
             tools=tools,
             messages=messages,
         )
-
-    print("\nResponse from Claude:\n")
-    print(response)
 
 
 if __name__ == "__main__":
