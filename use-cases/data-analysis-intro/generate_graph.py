@@ -43,7 +43,7 @@ Finally, here is an excerpt of the CSV data:
 
 def generate_code(csv_sample):
     message = anthropic_client.messages.create(
-        model="claude-3-7-sonnet-20250219",
+        model="claude-3-7-sonnet-latest",
         max_tokens=2048,
         system="You are an expert programmer. When given a programming task, " +
            "you will only output the final code, without any explanation. " +
