@@ -30,7 +30,7 @@ Finally, here are a few lines of the raw text of the CSV:
 """
 
 class ClaudeCsvToJsonCodeGenerator:
-  id = "claude-3-7-sonnet-latest"
+  generator_id = "csv2json-claude-3-7-sonnet-latest"
 
   @staticmethod
   def generate_code(desired_schema_obj, sample_data):

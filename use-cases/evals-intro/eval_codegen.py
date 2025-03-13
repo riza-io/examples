@@ -69,9 +69,9 @@ def _validate_result(test_case, code_execution):
     }
 
 
-def evaluate_llm_code(llm_id, code_generator, test_cases):
+def evaluate_llm_code(generator_id, code_generator, test_cases):
     results = {
-        "llm_id": llm_id,
+        "generator_id": generator_id,
         "summary": {
             "total": len(test_cases),
             "passed": 0,
@@ -118,7 +118,7 @@ def main():
     code_generator = ClaudeCsvToJsonCodeGenerator()
 
     results = evaluate_llm_code(
-        llm_id=code_generator.id,
+        generator_id=code_generator.generator_id,
         code_generator=code_generator.generate_code,
         test_cases=ALL_TEST_CASES
     )
