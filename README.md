@@ -14,8 +14,10 @@
 
 | Code example | Related docs guide |
 |--------------|------------|
+| [Code Generation Evals](./use-cases/evals-intro/): Programmatically test the quality of LLM-generated code. | [Code generation evals use case guide](https://docs.riza.io/guides/use-cases/codegen-evals) |
 | [Data analysis](./use-cases/data-analysis-intro/): Analyze data and generate charts using Riza and an LLM. | [Data analysis use case guide](https://docs.riza.io/guides/use-cases/data-analysis) |
 | [Data extraction](./use-cases/data_extraction_intro.py): Prompt an LLM to generate code to scrape data from HTML, and run the code safely with Riza. | [Data extraction use case guide](https://docs.riza.io/guides/use-cases/data-extraction) |
+| [Data transformation](./use-cases/data-transformation-intro/): Run LLM-generated code to transform data to another format. | [Data transformation use case guide](https://docs.riza.io/guides/use-cases/data-transformation) |
 
 ### LLM platforms
 
