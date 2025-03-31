@@ -32,6 +32,10 @@ The following examples show how to enable different LLM models to execute code u
 | [OpenAI](./platforms/openai_code.py) | [OpenAI platform guide](https://docs.riza.io/guides/platforms/openai) |
 | Mistral | [Mistral platform guide](https://docs.riza.io/guides/platforms/mistral) |
 
+### Demos
+| Code example | Related guide |
+|--------------|------------|
+| [MCP + PydanticAI](./demos/mcp_and_pydanticai/): Build an agent with PydanticAI, with 3 MCP servers: 1. the fetch MCP server (web browsing) 2. the Postgres MCP server (database querying) 3. Riza's remote MCP server (code interpreter) | [video walkthrough](https://www.youtube.com/watch?v=OZIWvqcP6so) |
 
 ## Provide feedback
 
