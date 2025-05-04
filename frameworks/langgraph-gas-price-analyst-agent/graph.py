@@ -1,5 +1,5 @@
 from langgraph.graph import StateGraph, START, END
-from types.state import TrackerState
+from state import TrackerState
 from nodes.scrape_prices import scrape_prices_node
 from nodes.check_if_changed import check_if_changed_node
 from nodes.summarize_change import summarize_change_node

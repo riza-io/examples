@@ -2,7 +2,7 @@ import os
 from dotenv import load_dotenv
 from langchain_anthropic import ChatAnthropic
 from langchain.prompts import PromptTemplate
-from types.state import TrackerState
+from state import TrackerState
 
 load_dotenv()
 llm = ChatAnthropic(

@@ -1,6 +1,6 @@
 from utils.storage import load_previous_content
 from utils.diff import get_diff
-from types.state import TrackerState
+from state import TrackerState
 
 
 def check_if_changed_node(state: TrackerState) -> TrackerState:

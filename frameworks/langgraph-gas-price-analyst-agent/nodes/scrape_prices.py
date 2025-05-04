@@ -2,7 +2,7 @@ import os
 from dotenv import load_dotenv
 from browserbase import Browserbase
 from playwright.sync_api import sync_playwright, Playwright
-from types.state import TrackerState
+from state import TrackerState
 
 load_dotenv()
 bb = Browserbase(api_key=os.environ["BROWSERBASE_API_KEY"])
