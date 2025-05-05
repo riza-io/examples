@@ -19,6 +19,14 @@
 | [Data extraction](./use-cases/data_extraction_intro.py): Prompt an LLM to generate code to scrape data from HTML, and run the code safely with Riza. | [Data extraction use case guide](https://docs.riza.io/guides/use-cases/data-extraction) |
 | [Data transformation](./use-cases/data-transformation-intro/): Run LLM-generated code to transform data to another format. | [Data transformation use case guide](https://docs.riza.io/guides/use-cases/data-transformation) |
 
+### Frameworks
+
+The following examples show how to use Riza with other AI tools and frameworks.
+
+| Code example | Related docs guide |
+|--------------|------------|
+| [Data analysis AI agent with LangGraph, Browserbase, and Riza](./frameworks/langgraph-gas-price-analyst-agent/): Build an AI agent that extracts dynamic data from a website, analyzes key changes in the data, and generates a relevant chart to accompany the analysis. In this demo, we analyze changes in gas prices across different U.S. states. | [LangGraph framework guide](https://docs.riza.io/guides/frameworks/langgraph-gas-price-agent) |
+
 ### LLM platforms
 
 The following examples show how to enable different LLM models to execute code using Riza.
