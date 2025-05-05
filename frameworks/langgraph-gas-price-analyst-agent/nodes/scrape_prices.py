@@ -44,4 +44,4 @@ def scrape_prices_node(state: TrackerState) -> TrackerState:
     table_html = ""
     with sync_playwright() as playwright:
       table_html = _run(playwright, url)
-    return {**state, "current_content": table_html}
+    return {**state, "current_html": table_html}

@@ -4,7 +4,6 @@ from langchain_anthropic import ChatAnthropic
 from langchain.prompts import PromptTemplate
 from rizaio import Riza
 from state import TrackerState
-from utils.storage import save_image
 
 load_dotenv()
 
@@ -21,18 +20,18 @@ llm = ChatAnthropic(
 )
 prompt = PromptTemplate.from_template(
     """
-    You're an analyst tracking changes in gas prices across different U.S. states.
-
-    I want to create a chart / graph / infographic that illustrates the changes described in the "Summary" below. I've also provided the CSV datasets of the gas price data from yesterday, and gas price data from today. The "Summary" was written based on this data.
-
-    Please figure out what chart / graph / infographic to create, then write a Python function to create this graph. Keep it simple.
+    You are given HTML table of gas prices in different US states. Write a python function that extracts the data, and returns it as a CSV with the following headings:
+    - state
+    - regular_price
+    - midgrade_price
+    - premium_price
+    - diesel_price
 
     IMPORTANT: Only output the final code, without any explanation. Do NOT put the code in a codeblock.
 
     Here are the rules for writing the Python function:
-    - The function should generate a chart and return the chart as a base64-encoded PNG image.
-    - The function should return an object that has 1 field: "image". The "image" data should be the chart as a base64-encoded PNG image.
-    - Use only the Python standard library and built-in modules. In addition, you can use `plotly`.
+    - The function should return an object that has 1 field: "csv". The "csv" data should the CSV content as a string.
+    - Use only the Python standard library and built-in modules. In addition, you can use `beautifulsoup4`.
     - The function signature must be:
 
     ```
@@ -40,28 +39,16 @@ prompt = PromptTemplate.from_template(
     ```
 
     `input` is a Python object.
-    Yesterday's CSV data is available as text at `input["yesterday"]`.
-    Today's CSV data is available as text at `input["today"]`.
+    The HTML table is available as text at `input["html_table"]`.
 
+    Here is the html_table:
 
-    Here is the gas price summary, and raw data of gas prices yesterday and today:
-
-
-    == Summary ==
-    {summary}
-
-
-    == Previous data (yesterday) ==
-    {previous_data}
-
-
-    == New data (today) ==
-    {current_data}
+    {html_table}
 
     """
 )
 
-grapher = prompt | llm
+extractor = prompt | llm
 
 
 def _run_code(code, input_data):
@@ -81,11 +68,9 @@ def _run_code(code, input_data):
     return result.output
 
 
-def create_chart_node(state: TrackerState) -> TrackerState:
-    response = grapher.invoke({
-        "summary": state["summary"],
-        "previous_data": state["previous_csv"],
-        "current_data": state["current_csv"],
+def extract_price_data_node(state: TrackerState) -> TrackerState:
+    response = extractor.invoke({
+        "html_table": state["current_html"],
     })
 
     python_code = response.content
@@ -93,13 +78,10 @@ def create_chart_node(state: TrackerState) -> TrackerState:
     print(python_code)
 
     input_data = {
-        "yesterday": state["previous_csv"],
-        "today": state["current_csv"],
+        "html_table": state["current_html"],
     }
     output = _run_code(python_code, input_data)
     print("Output of running the code:")
     print(output)
 
-    image_path = save_image(state["url"], output["image"], state["storage_folder_path"])
-
-    return {**state, "chart_path": image_path}
+    return {**state, "current_csv": output["csv"]}
