@@ -1,8 +1,9 @@
+import os
 from graph import graph
 
-# TODO: Provide the path to a folder that will be used to store previous
-# scraped gas prices for comparison.
-STORAGE_FOLDER_PATH = ""
+# Store all output in a local `.output` folder.
+script_directory = os.path.dirname(os.path.abspath(__file__))
+STORAGE_FOLDER_PATH = os.path.join(script_directory, ".output")
 
 GAS_PRICE_SITE = "https://gasprices.aaa.com/state-gas-price-averages/"
 
